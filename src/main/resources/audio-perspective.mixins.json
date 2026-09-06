@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "de.distantnova.audioperspective.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "ServerPlayerManagerMixin",
+    "roleplay.HybridRegionChannelMixin",
+    "roleplay.RegionHooksMixin",
+    "roleplay.RegionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

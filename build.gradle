@@ -1,0 +1,70 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = 'henkelmax.public'
+        url = 'https://maven.maxhenkel.de/repository/public'
+    }
+
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+    splitModDependencies = true
+
+    mods {
+        'audio_perspective' {
+            sourceSet('main')
+            sourceSet('client')
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    implementation "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
+
+    // Exposes optional Mixin targets for validation without requiring the mod at runtime.
+    compileOnly "maven.modrinth:audioplayer-roleplay:fabric-${project.audioplayer_roleplay_version}"
+    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_version}"
+}
+
+def modVersion = project.version.toString()
+def artifactName = project.name
+
+processResources {
+    inputs.property 'version', modVersion
+    filesMatching('fabric.mod.json') {
+        expand version: modVersion
+    }
+}
+
+tasks.named('jar', Jar) {
+    from('LICENSE') {
+        rename { "${it}_${artifactName}" }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
